@@ -145,7 +145,6 @@ export const Transcriptions = ({
     const querySnapshot = await getDocs(q)
 
     querySnapshot.forEach(doc => {
-      // doc.data() is never undefined for query doc snapshots
       docList.push(doc.data())
     })
 
@@ -204,6 +203,21 @@ export const Transcriptions = ({
         )}
         <SearchIcon icon={faMagnifyingGlass} />
       </SearchWrapper>
+
+      {/* 🔥 CONTADOR DE RESULTADOS */}
+      {searchTerm && (
+        <div
+          style={{
+            background: "#fff",
+            padding: "0.5rem 1rem",
+            fontWeight: "bold",
+            color: "#1a3185"
+          }}
+        >
+          {filteredData.length} resultados encontrados
+        </div>
+      )}
+
       {transcriptData.length > 0 ? (
         <>
           <TranscriptContainer className={``}>
@@ -253,11 +267,6 @@ function TranscriptItem({
 }) {
   const handleClick = (val: number) => {
     const valSeconds = val / 1000
-    /* data from backend is in milliseconds
-     
-       needs to be converted to seconds to 
-       set currentTime property of <video> element */
-
     setCurTimeVideo(valSeconds)
   }
 
@@ -281,6 +290,7 @@ function TranscriptItem({
   const isHighlighted = (index: number): boolean => {
     return index === highlightedId
   }
+
   const highlightText = (text: string, term: string) => {
     if (!term) return text
     const regex = new RegExp(`(${term})`, "gi")
@@ -288,6 +298,7 @@ function TranscriptItem({
       .split(regex)
       .map((part, i) => (regex.test(part) ? <mark key={i}>{part}</mark> : part))
   }
+
   return (
     <TranscriptRow
       className={
@@ -312,7 +323,4 @@ function TranscriptItem({
           </TimestampButton>
         </Row>
       </TimestampCol>
-      <Col className={`pt-1`}>{highlightText(element.text, searchTerm)}</Col>
-    </TranscriptRow>
-  )
-}
+      <Col className={`pt-1`}>{highlightText(element.text, searchTerm)}
